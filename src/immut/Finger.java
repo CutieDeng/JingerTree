@@ -583,6 +583,7 @@ class Utils {
                             var i0Size = di.size;
                             if (less >= i0Size) {
                                 newLeft.add(di);
+                                less -= i0Size;
                             } else if (less == 0) {
                                 newRight.add(di);
                             } else {
@@ -592,6 +593,7 @@ class Utils {
                                 var splitRight = splitRst.right.get();
                                 newLeft.add(splitLeft);
                                 newRight.add(splitRight);
+                                less = 0;
                             }
                         }
                         Optional<Finger.Digit<Finger.Digit<T>>> leftOut, rightOut;
@@ -833,12 +835,21 @@ class Test {
     public static void main(String[] args) {
         Random random = new Random();
         MyList ls = new MyList();
-        for (int i = 0; i < 10; i += 1) {
+        var start = System.nanoTime();
+        for (int i = 0; i < 10000000; i += 1) {
             ls.add(i);
         }
-        for (int i = 10; i >= 0; i -= 1) {
-            ls.truncate(i);
-            System.out.println(ls);
+        for (int i = 10000000; i >= 0; i -= 1) {
+            if (random.nextBoolean()) {
+                ls.truncate(i);
+                if (ls.size() != i) {
+                    throw new AssertionError();
+                }
+            }
         }
+        var end = System.nanoTime();
+        end -= start;
+        System.out.printf("time cost: %f ms\n", (double ) end / 1e6);
+        System.out.println(ls);
     }
 }

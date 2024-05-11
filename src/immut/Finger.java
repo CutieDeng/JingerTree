@@ -717,9 +717,9 @@ class Utils {
         }
         switch (finger) {
             case Finger.Deep<T> v -> {
-                if (idx <= v.left.size) {
+                if (idx < v.left.size) {
                     consume.accept(idx, v.left);
-                } else if (idx <= v.left.size + v.deep.size()) {
+                } else if (idx < v.left.size + v.deep.size()) {
                     int l = idx - v.left.size;
                     // ...
                     BiConsumer<Integer, Finger.Digit<Finger.Digit<T>>> c = (i, d) -> {
@@ -739,7 +739,7 @@ class Utils {
                     indexGetImpl(v.deep, l, c);
                 } else {
                     int l = idx - v.left.size - v.deep.size();
-                    consume.accept(idx, v.right);
+                    consume.accept(l, v.right);
                 }
             }
             case Finger.Single<T> v -> {
@@ -793,63 +793,4 @@ class Utils {
         return ans;
     }
 
-
-}
-
-class MyList<T> {
-
-    private Finger<T> content;
-
-    public MyList() {
-        content = Finger.Empty.empty();
-    }
-
-    public void truncate(int len) {
-        if (content.size() > len) {
-            var sp = Utils.split(content, len);
-            content = sp.left();
-        }
-    }
-
-    public void add(T obj) {
-        content = Utils.pushRight(content, obj);
-    }
-
-    public int size() {
-        return content.size();
-    }
-
-    public T get(int idx) {
-        return Utils.indexGet(content, idx);
-    }
-
-    @Override
-    public String toString() {
-        return "MyList{" +
-                "content=" + Utils.toString(content) +
-                '}';
-    }
-}
-
-class Test {
-    public static void main(String[] args) {
-        Random random = new Random();
-        MyList ls = new MyList();
-        var start = System.nanoTime();
-        for (int i = 0; i < 10000000; i += 1) {
-            ls.add(i);
-        }
-        for (int i = 10000000; i >= 0; i -= 1) {
-            if (random.nextBoolean()) {
-                ls.truncate(i);
-                if (ls.size() != i) {
-                    throw new AssertionError();
-                }
-            }
-        }
-        var end = System.nanoTime();
-        end -= start;
-        System.out.printf("time cost: %f ms\n", (double ) end / 1e6);
-        System.out.println(ls);
-    }
 }
